@@ -1,0 +1,30 @@
+[package]
+name = "devns"
+version = "0.1.0"
+edition = "2024"
+
+homepage = "https://github.com/eduardobaginskicosta/devns"
+license = "BSD-3-Clause"
+license-file = "LICENSE"
+publish = false
+
+[lib]
+doc = false
+doctest = false
+name = "core"
+path = "lib/lib.rs"
+
+[[bin]]
+name = "devns"
+path = "src/main.rs"
+
+[dependencies]
+chrono = "0.4.44"
+local-ip-address = "0.6.13"
+tokio = { version = "1.52.3", features = ["full"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+panic = "abort"
+codegen-units = 1

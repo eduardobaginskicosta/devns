@@ -1,0 +1,15 @@
+ccf-version: 1.2.0
+message: "If you use this software, please cite it as below."
+
+title: "DevNS (Development Name System)"
+version: "0.1.0"
+date-released: 31-5-2026
+
+authors:
+  - family-names: "Baginski Costa"
+    given-names: "Eduardo"
+    orcid: "https://orcid.org/0009-0002-3089-7800"
+
+type: software
+repository-code: "https://github.com/eduardobaginskicosta/devns"
+url: "https://github.com/eduardobaginskicosta/devns"
