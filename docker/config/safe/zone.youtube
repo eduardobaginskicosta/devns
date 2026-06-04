@@ -1,0 +1,6 @@
+@ ZONE: youtube.com, m.youtube.com, youtu.be, youtube-nocookie.com, googlevideo.com
+@ TTL: 8600
+@ NS: ns1.google.com
+@ MX: dns-admin.google.com
+@ A: 216.239.38.120
+@ AAAA: 2001:4860:4802:32::78

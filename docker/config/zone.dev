@@ -1,0 +1,6 @@
+@ ZONE: host, server, server.host
+@ TTL: 3600
+@ NS: localhost
+@ MX: mail.server.host
+@ A: $LOCALHOST
+@ AAAA: $LOCALHOST

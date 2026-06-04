@@ -6,7 +6,10 @@ use crate::{
   structs::{BytePacketBuffer, DnsPacket, DnsQuestion},
 };
 
-use std::net::{IpAddr, SocketAddr};
+use std::{
+  fmt::Display,
+  net::{IpAddr, Ipv4Addr, SocketAddr},
+};
 use tokio::net::UdpSocket;
 
 // === SEND RESPONSE ===
@@ -70,15 +73,37 @@ pub fn handle_lookup(
 // === STARTUP BANNER ===
 
 pub fn startup_banner(ip: IpAddr, config: ServerConfig) {
-  println!("# dns.title        : DevNS (Development Name Server)");
-  println!("# dns.author       : Eduardo Baginski Costa <eduardobcosta1234@gmail.com>");
-  println!("# dns.license      : BSD-3-Clause");
-  println!("# dns.donate       : https://ko-fi.com/eduardobaginskicosta");
-  println!("# dns.repo         : https://github.com/eduardobaginskicosta/devns");
-  println!("# dns.max.messages : {}", config.max_messages);
-  println!("# dns.max.workers  : {}", config.max_workers);
-  println!("# dns.debug        : {}", config.debug);
-  println!("# dns.bind         : {}", ip);
-  println!("# dns.port         : {}", config.port);
-  println!("# zones.amount     : {}", config.zones.len());
+  let format_ipv4_list = |ips: &[Ipv4Addr]| -> String {
+    let mut out = String::new();
+    for (i, ip) in ips.iter().enumerate() {
+      if i > 0 {
+        out.push_str(", ");
+      }
+      out.push_str(&ip.to_string());
+    }
+    out
+  };
+
+  let line = |label: &str, value: &dyn Display| {
+    println!("# {:<16}: {}", label, value);
+  };
+
+  const TITLE: &str = "DevNS (Development Name Server)";
+  const AUTHOR: &str = "Eduardo Baginski Costa <eduardobcosta1234@gmail.com>";
+  const LICENSE: &str = "BSD-3-Clause";
+  const DONATE: &str = "https://ko-fi.com/baginskistudio";
+  const REPO: &str = "https://github.com/eduardobaginskicosta/devns";
+
+  line("dns.title", &TITLE);
+  line("dns.author", &AUTHOR);
+  line("dns.license", &LICENSE);
+  line("dns.donate", &DONATE);
+  line("dns.repo", &REPO);
+  line("dns.max.messages", &config.max_messages);
+  line("dns.max.workers", &config.max_workers);
+  line("dns.nameservers", &format_ipv4_list(&config.nameservers));
+  line("dns.debug", &config.debug);
+  line("dns.bind", &ip);
+  line("dns.port", &config.port);
+  line("zones.amount", &config.zones.len());
 }

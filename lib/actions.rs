@@ -16,7 +16,7 @@ use tokio::net::UdpSocket;
 // === CONSTANTS ===
 
 const DOOM_ID: u16 = 0x29A; // yes, it's a Doom game reference
-const ROOT_SERVERS: &[Ipv4Addr] = &[
+pub const ROOT_SERVERS: &[Ipv4Addr] = &[
   Ipv4Addr::new(198, 41, 0, 4), // a.root-servers.net
   Ipv4Addr::new(1, 1, 1, 1),    // one.one.one.one (cloudflare)
   Ipv4Addr::new(1, 0, 0, 1),    // one.one.one.one (cloudflare)

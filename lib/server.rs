@@ -163,7 +163,7 @@ impl ServerConfig {
       zones: vec![],
       max_messages: max_messages.max(DEFAULT_MAX_MESSAGES),
       max_workers: max_workers.max(DEFAULT_MAX_WORKERS),
-      debug: true,
+      debug: false,
       port: 53,
     }
   }

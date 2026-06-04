@@ -1,0 +1,22 @@
+services:
+  devns:
+    container_name: devns
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: devns:latest
+    restart: unless-stopped
+    network_mode: host
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    environment:
+      PORT: 53
+      DEBUG_MODE: "false"
+      MAX_WORKERS: 10
+      MAX_MESSAGES: 20
+      DNS_SERVERS: "1.1.1.1;1.0.0.1;8.8.8.8"
+    volumes:
+      - ./config:/config
+    cap_add:
+      - NET_BIND_SERVICE

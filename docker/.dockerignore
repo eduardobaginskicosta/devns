@@ -1,0 +1,29 @@
+# cargo & rust artifacts
+.rustup/
+.cargo/
+target/
+debug/
+release/
+
+**/*.rs.bk
+*.pdb
+
+# ides (rustrover, itellij, vscode)
+.vscode/
+.idea/
+*.iml
+
+# git & bash
+.gitignore
+.git
+.sh
+
+# junks and outputs
+.DS_Store
+Thumbs.db
+*.log
+
+# docker & ci leftovers
+docker-compose.yml
+Dockerfile
+docker/

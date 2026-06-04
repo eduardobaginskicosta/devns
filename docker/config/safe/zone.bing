@@ -1,0 +1,6 @@
+@ ZONE: bing.com
+@ TTL: 8600
+@ NS: ns1.ax-msedge.net
+@ MX: msnhst.microsoft.com
+@ A: 150.171.27.16, 150.171.28.16
+@ AAAA: 2620:1ec:33::16, 2620:1ec:33:1::16
