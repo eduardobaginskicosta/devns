@@ -1,9 +1,9 @@
-FROM debian:bookworm-slim
+FROM debian:stable
 WORKDIR /app
 
 RUN apt update && apt install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY target/x86_64-unknown-linux-gnu/release/devns /usr/local/bin/devns
-COPY docker/config /config
+COPY config /config
 
 RUN chmod +x /usr/local/bin/devns
 ENV PORT=53
