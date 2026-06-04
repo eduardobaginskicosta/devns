@@ -3,6 +3,7 @@
 [repo]: https://github.com/eduardobaginskicosta/domainnamesystem
 [kofi]: https://ko-fi.com/baginskistudio
 
+[citation]: https://docs.github.com/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-citation-files
 [rust]: https://rust-lang.org/tools/install/
 [pwsh]: https://learn.microsoft.com/en-us/powershell/scripting/install/linux-overview
 [wsl]: https://learn.microsoft.com/en-us/windows/wsl/install
@@ -13,7 +14,7 @@
 [social_x]: https://www.x.com/baginskistudio
 
 # DevNS (Development Name Server)
-[**❤️&ensp;Apoie o desenvolvimento deste e outros projetos no Ko-Fi&ensp;❤️**][kofi]
+[**Apoie o desenvolvimento deste e outros projetos no Ko-Fi**][kofi]
 
 O **DevNS** é um servidor **DNS** escrito em **Rust** com foco em ser leve, rápido
 e simples de ser utilizado. Este projeto é uma refatoração do repositório
@@ -23,12 +24,12 @@ que, por sua vez, ocasionavam a incompatibilidade com sistemas **POSIX** que
 apresnetam uma rigidez maior em relação as especificações **RFC 1034** e
 **RFC 1035**.
 
-> **Este projeto tem o foco de servir a ambientes de desenvolvimento.
+> _Este projeto tem o foco de servir a ambientes de desenvolvimento.
 > Não utilize em servidores de produção, mesmo que este seja projetado
-> para manter grandes cargas de solicitação.**
+> para manter grandes cargas de solicitação._
 
-**🐋 INÍCIO RÁPIDO DOCKER:
-` git clone https://github.com/eduardobaginskicosta/devns-docker `.**
+**Início rápido Docker:
+` git clone https://github.com/eduardobaginskicosta/devns-docker `**
 
 ## 📦 Execução Local e Container Docker
 
@@ -436,8 +437,30 @@ progresso de projetos em andamento, projetos futuros e muito mais.
 
 Ou, se preferir, me siga nas redes sociais:
 - [**Seguir no Instagram**][social_insta] -- publico fotos e momentos do meu dia a dia.
-- [**Seguir no YouTube**][social_yt] -- publico vídeos a respeito de projetos no
-  geral, não limitando-se apenas à programação.
+- [**Seguir no YouTube**][social_yt] -- publico vídeos a respeito de projetos no geral.
 - [**Seguir no Twitter (X)**][social_x] -- publico pronunciamentos curtos e rápidos.
 - [**Seguir no LinkedIn**][social_in] -- contexto mais profissional, porém com
   conteúdo de qualidade.
+
+## 👨‍🏫 Citar o Repositório
+
+Se você utiliza este _software_ no seu trabalho, por favor cite-o utilizando as
+seguintes informações de metadados.
+[Saiba mais a respeito dos arquivos de citação][citation].
+
+Citação no modelo **APA**:
+```APA
+Baginski Costa, E. (2026). DevNS (Development Name System) (Version 0.1.0) [Computer software]. https://github.com/eduardobaginskicosta/devns
+```
+
+Citação no modelo **BibTeX**:
+```BibTeX
+@software{Baginski_Costa_DevNS_Development_Name_2026,
+author = {Baginski Costa, Eduardo},
+month = may,
+title = {{DevNS (Development Name System)}},
+url = {https://github.com/eduardobaginskicosta/devns},
+version = {0.1.0},
+year = {2026}
+}
+```
