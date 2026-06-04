@@ -35,17 +35,17 @@ pub async fn adjust_workers(
 
 pub async fn handle_worker_task(task: WorkerTask, debug: bool) {
   if let Err(e) = handle_query(
-    &task.config(),
-    &task.lookup_socket(),
-    &task.socket(),
-    task.payload().to_vec(),
-    *task.source(),
+    &task.config,
+    &task.lookup_socket,
+    &task.socket,
+    task.payload.to_vec(),
+    task.source,
     debug,
   )
   .await
   {
     if debug {
-      log_debug!("Error processing query for {}: {}", task.source(), e);
+      log_debug!("Error processing query for {}: {}", task.source, e);
     }
   }
 }

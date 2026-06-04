@@ -5,13 +5,12 @@ edition = "2024"
 
 homepage = "https://github.com/eduardobaginskicosta/devns"
 license = "BSD-3-Clause"
-license-file = "LICENSE"
 publish = false
 
 [lib]
 doc = false
 doctest = false
-name = "core"
+name = "dns_core"
 path = "lib/lib.rs"
 
 [[bin]]

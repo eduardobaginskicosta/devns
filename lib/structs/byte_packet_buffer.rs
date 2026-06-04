@@ -2,21 +2,18 @@ use crate::enums::BytePacketError;
 
 pub const PACKET_BUFFER_SIZE: usize = 0x500;
 pub struct BytePacketBuffer {
-  position: usize,
-  buffer: [u8; PACKET_BUFFER_SIZE],
+  pub position: usize,
+  pub buffer: [u8; PACKET_BUFFER_SIZE],
 }
 
 impl BytePacketBuffer {
   pub fn new() -> Self {
-    Self { position: 0, buffer: [0; PACKET_BUFFER_SIZE] }
+    Self { position: 0, buffer: [0u8; PACKET_BUFFER_SIZE] }
   }
 
   // * members
   pub fn pos(&self) -> usize {
     self.position
-  }
-  pub fn buffer(&mut self) -> &mut [u8; PACKET_BUFFER_SIZE] {
-    &mut self.buffer
   }
 
   // * actions
@@ -75,9 +72,10 @@ impl BytePacketBuffer {
 
   // * safe write
   pub fn write(&mut self, val: u8) -> Result<(), BytePacketError> {
-    *self.buffer.get_mut(self.position).ok_or(BytePacketError::EndOfBuffer)? = val;
-    self.position += 1;
-    Ok(())
+    self.buffer.get_mut(self.position).ok_or(BytePacketError::EndOfBuffer).map(|byte| {
+      *byte = val;
+      self.position += 1;
+    })
   }
 
   pub fn write_u16(&mut self, val: u16) -> Result<(), BytePacketError> {
@@ -119,7 +117,7 @@ impl BytePacketBuffer {
           self.seek(position + 2)?
         }
 
-        let byte2: u16 = self.get(position)? as u16;
+        let byte2: u16 = self.get(position + 1)? as u16;
         let offset: u16 = (((length as u16) ^ COMPRESSION_POINTER as u16) << 0x8) | byte2;
 
         position = offset as usize;
@@ -150,6 +148,7 @@ impl BytePacketBuffer {
       if label.len() > 0x3F {
         return Err(BytePacketError::LabelTooLong);
       }
+      self.write(label.len() as u8)?;
       self.write_bytes(label.as_bytes())?
     }
     self.write(0x0)

@@ -30,7 +30,8 @@ impl DnsRecord {
 
     let qtype_num: u16 = buffer.read_u16()?;
     let qtype: QueryType = QueryType::from(qtype_num);
-    let _class: u16 = buffer.read_u16()?;
+    buffer.read_u16()?;
+
     let ttl: u32 = buffer.read_u32()?;
     let data_len: u16 = buffer.read_u16()?;
 

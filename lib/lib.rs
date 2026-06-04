@@ -7,4 +7,4 @@ pub mod utils;
 pub mod workers;
 
 mod server;
-pub use server::DnsServer;
+pub use server::{DnsServer, DnsZone, ServerConfig};

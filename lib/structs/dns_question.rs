@@ -5,21 +5,13 @@ use crate::{
 
 #[derive(PartialEq, Eq, Debug, Clone, Default)]
 pub struct DnsQuestion {
-  qtype: QueryType,
-  name: String,
+  pub qtype: QueryType,
+  pub name: String,
 }
 
 impl DnsQuestion {
   pub fn new(name: String, qtype: QueryType) -> Self {
     Self { qtype, name }
-  }
-
-  // * members
-  pub fn qtype(&mut self) -> &mut QueryType {
-    &mut self.qtype
-  }
-  pub fn name(&mut self) -> &mut str {
-    &mut self.name
   }
 
   // * safe read

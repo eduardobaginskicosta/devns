@@ -5,24 +5,24 @@ use crate::{
 
 #[derive(Debug, Clone, Default)]
 pub struct DnsHeader {
-  id: u16,
+  pub id: u16,
 
-  authoritative_answer: bool,
-  recursion_desired: bool,
-  truncated_message: bool,
-  response: bool,
-  opcode: u8,
+  pub authoritative_answer: bool,
+  pub recursion_desired: bool,
+  pub truncated_message: bool,
+  pub response: bool,
+  pub opcode: u8,
 
-  recursion_available: bool,
-  checking_disabled: bool,
-  authed_data: bool,
-  rescode: ResultCode,
-  z: bool,
+  pub recursion_available: bool,
+  pub checking_disabled: bool,
+  pub authed_data: bool,
+  pub rescode: ResultCode,
+  pub z: bool,
 
-  authoritative_entries: u16,
-  resource_entries: u16,
-  questions: u16,
-  answers: u16,
+  pub authoritative_entries: u16,
+  pub resource_entries: u16,
+  pub questions: u16,
+  pub answers: u16,
 }
 
 impl DnsHeader {
@@ -44,100 +44,6 @@ impl DnsHeader {
       questions: 0,
       answers: 0,
     }
-  }
-
-  // * members
-  pub fn id(&mut self) -> &u16 {
-    &self.id
-  }
-  pub fn authoritative_answer(&mut self) -> &bool {
-    &self.authoritative_answer
-  }
-  pub fn recursion_desired(&mut self) -> &bool {
-    &self.recursion_desired
-  }
-  pub fn truncated_message(&mut self) -> &bool {
-    &self.truncated_message
-  }
-  pub fn response(&mut self) -> &bool {
-    &self.response
-  }
-  pub fn opcode(&mut self) -> &u8 {
-    &self.opcode
-  }
-  pub fn recursion_available(&mut self) -> &bool {
-    &self.recursion_available
-  }
-  pub fn checking_disabled(&mut self) -> &bool {
-    &self.checking_disabled
-  }
-  pub fn authed_data(&mut self) -> &bool {
-    &self.authed_data
-  }
-  pub fn rescode(&mut self) -> &ResultCode {
-    &self.rescode
-  }
-  pub fn z(&mut self) -> &bool {
-    &self.z
-  }
-  pub fn authoritative_entries(&mut self) -> &u16 {
-    &self.authoritative_entries
-  }
-  pub fn resource_entries(&mut self) -> &u16 {
-    &self.resource_entries
-  }
-  pub fn questions(&mut self) -> &u16 {
-    &self.questions
-  }
-  pub fn answers(&mut self) -> &u16 {
-    &self.answers
-  }
-
-  // * setters
-  pub fn set_id(&mut self, v: u16) {
-    self.id = v
-  }
-  pub fn set_authoritative_answer(&mut self, v: bool) {
-    self.authoritative_answer = v
-  }
-  pub fn set_recursion_desired(&mut self, v: bool) {
-    self.recursion_desired = v
-  }
-  pub fn set_truncated_message(&mut self, v: bool) {
-    self.truncated_message = v
-  }
-  pub fn set_response(&mut self, v: bool) {
-    self.response = v
-  }
-  pub fn set_opcode(&mut self, v: u8) {
-    self.opcode = v
-  }
-  pub fn set_recursion_available(&mut self, v: bool) {
-    self.recursion_available = v
-  }
-  pub fn set_checking_disabled(&mut self, v: bool) {
-    self.checking_disabled = v
-  }
-  pub fn set_authed_data(&mut self, v: bool) {
-    self.authed_data = v
-  }
-  pub fn set_rescode(&mut self, v: ResultCode) {
-    self.rescode = v
-  }
-  pub fn set_z(&mut self, v: bool) {
-    self.z = v
-  }
-  pub fn set_authoritative_entries(&mut self, v: u16) {
-    self.authoritative_entries = v
-  }
-  pub fn set_resource_entries(&mut self, v: u16) {
-    self.resource_entries = v
-  }
-  pub fn set_questions(&mut self, v: u16) {
-    self.questions = v
-  }
-  pub fn set_answers(&mut self, v: u16) {
-    self.answers = v
   }
 
   // * safe read

@@ -1,6 +1,8 @@
 use crate::{
+  DnsZone,
   enums::{BytePacketError, DnsRecord, QueryType, ResultCode},
-  structs::{BytePacketBuffer, DnsPacket, DnsQuestion, LookupRecord, ServerConfig},
+  server::ServerConfig,
+  structs::{BytePacketBuffer, DnsHeader, DnsPacket, DnsQuestion},
   utils::{handle_lookup, send_response},
 };
 
@@ -22,60 +24,43 @@ const ROOT_SERVERS: &[Ipv4Addr] = &[
 
 // === BUILD DNS PACKET ===
 
-pub fn build_dns_packet(record: &LookupRecord) -> Result<DnsPacket, BytePacketError> {
-  const DEFAULT_TTL: u32 = 0xE10; // 1 hour
-
-  let has_ipv4: bool = !record.ipv4().is_empty();
-  let has_ipv6: bool = !record.ipv6().is_empty();
-
-  let num_domains: usize = record.domains().len();
-  let num_questions: usize = (has_ipv4 as usize + has_ipv6 as usize) * num_domains;
-  let num_answers: usize = num_domains * (record.ipv4().len() + record.ipv6().len());
-
+pub fn build_dns_packet(
+  zone: &DnsZone,
+  domain: String,
+) -> Result<DnsPacket, BytePacketError> {
+  let ttl: u32 = zone.ttl.min(0xE10); // 1 hour
   let mut packet: DnsPacket = DnsPacket::default();
-  packet.header().set_id(DOOM_ID); // doom reference?
-  packet.header().set_recursion_desired(true);
-  packet.header().set_recursion_available(true);
-  packet.header().set_authoritative_answer(true);
-  packet.header().set_authed_data(true);
-  packet.header().set_response(true);
-  packet.header().set_rescode(ResultCode::NoError);
-  packet.header().set_questions(num_questions as u16);
-  packet.header().set_answers(num_answers as u16);
-  packet.header().set_authoritative_entries(num_domains as u16);
-  packet.header().set_resource_entries(num_domains as u16);
 
-  for domain in record.domains() {
-    if has_ipv4 {
-      packet.questions().push(DnsQuestion::new(domain.clone(), QueryType::A));
-    }
-    if has_ipv6 {
-      packet.questions().push(DnsQuestion::new(domain.clone(), QueryType::AAAA));
-    }
+  packet.questions.push(DnsQuestion::new(domain.clone(), QueryType::A));
+  packet.authorities.push(DnsRecord::NS {
+    domain: domain.clone(),
+    host: format!("ns1.{domain}"),
+    ttl: ttl,
+  });
+  packet.resources.push(DnsRecord::MX {
+    priority: 10,
+    domain: domain.clone(),
+    host: format!("mail.{domain}"),
+    ttl: ttl,
+  });
 
-    packet.answers().extend(record.ipv4().iter().map(|&address| DnsRecord::A {
-      address,
-      domain: domain.clone(),
-      ttl: DEFAULT_TTL,
-    }));
-    packet.answers().extend(record.ipv6().iter().map(|&address| DnsRecord::AAAA {
-      address,
-      domain: domain.clone(),
-      ttl: DEFAULT_TTL,
-    }));
-
-    packet.authorities().push(DnsRecord::NS {
-      domain: domain.clone(),
-      host: format!("ns1.{domain}"),
-      ttl: DEFAULT_TTL,
-    });
-    packet.resources().push(DnsRecord::MX {
-      domain: domain.clone(),
-      host: format!("mail.{domain}"),
-      priority: 10,
-      ttl: DEFAULT_TTL,
-    });
+  for &address in &zone.ipv4_addrs {
+    packet.answers.push(DnsRecord::A { domain: domain.clone(), address, ttl: ttl });
   }
+  for &address in &zone.ipv6_addrs {
+    packet.answers.push(DnsRecord::AAAA { domain: domain.clone(), address, ttl: ttl });
+  }
+
+  packet.header.questions = packet.questions.len() as u16;
+  packet.header.answers = packet.answers.len() as u16;
+  packet.header.authoritative_entries = packet.authorities.len() as u16;
+  packet.header.resource_entries = packet.resources.len() as u16;
+
+  packet.header.id = DOOM_ID;
+  packet.header.response = true;
+  packet.header.recursion_available = true;
+  packet.header.rescode = ResultCode::NoError;
+
   Ok(packet)
 }
 
@@ -88,19 +73,17 @@ pub async fn lookup(
   server: SocketAddr,
 ) -> Result<DnsPacket, BytePacketError> {
   let mut packet: DnsPacket = DnsPacket::default();
-  packet.header().set_id(DOOM_ID);
-  packet.header().set_questions(0x1);
-  packet.header().set_recursion_desired(true);
-  packet.questions().push(DnsQuestion::new(qname.to_string(), qtype));
+  packet.header.id = DOOM_ID;
+  packet.header.questions = 0x1;
+  packet.header.recursion_desired = true;
+  packet.questions.push(DnsQuestion::new(qname.to_string(), qtype));
 
   let mut req_buffer: BytePacketBuffer = BytePacketBuffer::new();
   packet.write(&mut req_buffer)?;
-
-  let buffer_pos: usize = req_buffer.pos();
-  socket.send_to(&req_buffer.buffer()[..buffer_pos], &server).await?;
+  socket.send_to(&req_buffer.buffer[..req_buffer.position], &server).await?;
 
   let mut res_buffer: BytePacketBuffer = BytePacketBuffer::new();
-  socket.recv_from(res_buffer.buffer()).await?;
+  socket.recv_from(&mut res_buffer.buffer).await?;
 
   DnsPacket::try_from(&mut res_buffer)
 }
@@ -109,23 +92,21 @@ pub async fn lookup(
 
 pub fn recursive_lookup<'a>(
   socket: &'a UdpSocket,
-  servers: Vec<Ipv4Addr>,
+  mut servers: Vec<Ipv4Addr>,
   qname: &'a str,
   qtype: QueryType,
 ) -> Pin<Box<dyn Future<Output = Result<DnsPacket, BytePacketError>> + Send + 'a>> {
   Box::pin(async move {
-    let mut servers = servers;
-
     while let Some(current_ns) = servers.pop() {
-      let mut ns_ip = current_ns;
+      let mut ns_ip: Ipv4Addr = current_ns;
 
       loop {
         let server = SocketAddr::new(IpAddr::V4(ns_ip), 53);
-        let mut response = lookup(socket, qname, qtype, server).await?;
+        let response = lookup(socket, qname, qtype, server).await?;
 
-        let resolved = !response.answers().is_empty()
-          && *response.header().rescode() == ResultCode::NoError;
-        let nxdomain = *response.header().rescode() == ResultCode::NxDomain;
+        let resolved =
+          !response.answers.is_empty() && response.header.rescode == ResultCode::NoError;
+        let nxdomain = response.header.rescode == ResultCode::NxDomain;
 
         if resolved || nxdomain {
           return Ok(response);
@@ -166,39 +147,53 @@ pub async fn handle_query(
   debug: bool,
 ) -> Result<(), BytePacketError> {
   let mut req_buffer: BytePacketBuffer = BytePacketBuffer::new();
-  req_buffer.buffer()[..buffer.len()].copy_from_slice(&buffer);
+  req_buffer.buffer[..buffer.len()].copy_from_slice(&buffer);
 
-  let mut request: DnsPacket = DnsPacket::try_from(&mut req_buffer)?;
+  let request: DnsPacket = DnsPacket::try_from(&mut req_buffer)?;
   let mut response: DnsPacket = DnsPacket::new();
 
-  response.header().set_id(*request.header().id());
-  response.header().set_recursion_desired(true);
-  response.header().set_recursion_available(true);
-  response.header().set_response(true);
+  response.header.id = request.header.id;
+  response.header.recursion_desired = true;
+  response.header.recursion_available = true;
+  response.header.response = true;
 
-  let Some(question) = request.questions().first_mut() else {
-    response.header().set_rescode(ResultCode::FormError);
+  let Some(question) = request.questions.first() else {
+    response.header.rescode = ResultCode::FormError;
     return send_response(socket, &mut response, source).await;
   };
 
-  let qname: &str = &question.name().to_string();
-  let qtype: QueryType = *question.qtype();
-  let mut _question: DnsQuestion = question.clone();
-
-  if let Some(_) = handle_lookup(config, &mut _question, &mut response, debug) {
-    return send_response(socket, &mut response, source).await;
+  if let Some(mut result) = handle_lookup(&config, question, &mut response, debug) {
+    return send_response(socket, &mut result, source).await;
   };
 
-  match recursive_lookup(client_socket, config.nameservers.clone(), qname, qtype).await {
-    Ok(mut result) => {
-      response.questions().push(question.clone());
-      response.header().set_rescode(*result.header().rescode());
-      response.answers().append(&mut result.answers());
-      response.authorities().append(&mut result.authorities());
-      response.resources().append(&mut result.resources());
+  match recursive_lookup(
+    client_socket,
+    if config.nameservers.is_empty() {
+      ROOT_SERVERS.to_vec()
+    } else {
+      config.nameservers.clone()
     },
-    Err(_) => response.header().set_rescode(ResultCode::ServerFail),
-  }
+    &question.name,
+    question.qtype,
+  )
+  .await
+  {
+    Ok(mut result) => {
+      response.header = DnsHeader {
+        rescode: result.header.rescode,
+        questions: result.questions.len() as u16,
+        answers: result.answers.len() as u16,
+        authoritative_entries: response.authorities.len() as u16,
+        resource_entries: response.resources.len() as u16,
+        ..response.header
+      };
 
+      response.questions.push(question.clone());
+      response.answers.append(&mut result.answers);
+      response.authorities.append(&mut result.authorities);
+      response.resources.append(&mut result.resources);
+    },
+    Err(_) => response.header.rescode = ResultCode::ServerFail,
+  }
   send_response(socket, &mut response, source).await
 }
