@@ -30,8 +30,7 @@ jobs:
 
             - - -
 
-            The Docker image for this release is available on Docker Hub:
-            [`baginskistudio/devns:${{ github.ref_name }}`](https://hub.docker.com/layers/baginskistudio/devns/${{ github.ref_name }}/).
+            The Docker image for this release is available on Docker Hub: [`baginskistudio/devns:${{ github.ref_name }}`](https://hub.docker.com/layers/baginskistudio/devns/${{ github.ref_name }}/).
 
             Docker Pull command: `docker pull baginskistudio/devns:${{ github.ref_name }}`.
           files: |
