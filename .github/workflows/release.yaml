@@ -59,7 +59,20 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
+          name: DevNS ${{ github.ref_name }}
           generate_release_notes: true
+          body: |
+            This release represents another step in the ongoing evolution of DevNS,
+            focusing on improving stability, performance, and overall reliability.
+
+            The project continues to grow through iterative development and real-world
+            feedback, helping shape a cleaner and more robust architecture over time.
+            Special thanks to everyone who has contributed feedback, reported issues,
+            or supported the project in any way — your involvement is essential to its
+            progress and is greatly appreciated.
+
+            If you find DevNS useful, consider [supporting the project on Ko-fi](https://ko-fi.com/baginskistudio).
           files: |
             dist/devns-linux-x86_64-musl.tar.gz
             dist/devns-windows-x86_64-gnu.tar.gz
