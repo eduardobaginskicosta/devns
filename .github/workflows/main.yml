@@ -16,7 +16,9 @@ jobs:
   docker:
     needs: [linux]
     uses: ./.github/workflows/docker.yml
-    secrets: inherit
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   release:
     needs: [linux, windows]
