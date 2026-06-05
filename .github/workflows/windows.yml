@@ -19,3 +19,7 @@ jobs:
           cp target/x86_64-pc-windows-gnu/release/devns.exe dist/windows/
           cp -r config dist/windows/
           tar -czf dist/devns-windows-x86_64-gnu.tar.gz -C dist/windows .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-musl
+          path: dist/devns-windows-x86_64-gnu.tar.gz
