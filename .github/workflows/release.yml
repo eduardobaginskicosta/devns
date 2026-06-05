@@ -13,6 +13,11 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
+          name: linux-musl
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-gnu
           path: dist
 
       - uses: softprops/action-gh-release@v2
@@ -35,7 +40,6 @@ jobs:
             - - -
 
             The Docker image for this release is available on Docker Hub: [`baginskistudio/devns:${{ github.ref_name }}`](https://hub.docker.com/layers/baginskistudio/devns/${{ github.ref_name }}/).
-
             Docker Pull command: `docker pull baginskistudio/devns:${{ github.ref_name }}`.
           files: |
             dist/devns-linux-x86_64-musl.tar.gz
