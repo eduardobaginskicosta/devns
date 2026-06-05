@@ -36,7 +36,7 @@ jobs:
         run: ./scripts/build.sh --windows --release
 
       - name: Create Dist Directory
-        run: mdir -p dist
+        run: mkdir -p dist
 
       - name: Package Linux
         run: |
@@ -51,7 +51,7 @@ jobs:
         run: |
           mkdir -p dist/windows
 
-          cp target/x86_64-pc-windows-gnu/release/devns dist/windows
+          cp target/x86_64-pc-windows-gnu/release/devns.exe dist/windows
           cp -r config dist/windows
 
           tar -czf dist/devns-windows-x86_64-gnu.tar.gz -C dist/windows .
@@ -64,7 +64,7 @@ jobs:
             dist/devns-linux-x86_64-musl.tar.gz
             dist/devns-windows-x86_64-gnu.tar.gz
 
-      - name: Setu up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
