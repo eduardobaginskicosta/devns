@@ -22,7 +22,3 @@ jobs:
         with:
           name: linux-musl
           path: dist/devns-linux-x86_64-musl.tar.gz
-      - uses: actions/upload-artifact@v4
-        with:
-          name: devns-linux-musl
-          path: target/x86_64-unknown-linux-musl/release/devns
