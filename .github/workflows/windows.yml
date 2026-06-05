@@ -18,4 +18,4 @@ jobs:
           mkdir -p dist/windows
           cp target/x86_64-pc-windows-gnu/release/devns.exe dist/windows/
           cp -r config dist/windows/
-          tar -czf dist/devns-windows-x86_64-gnu -C dist/windows .
+          tar -czf dist/devns-windows-x86_64-gnu.tar.gz -C dist/windows .
