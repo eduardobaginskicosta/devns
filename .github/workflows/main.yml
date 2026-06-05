@@ -1,0 +1,24 @@
+name: Release Orchestrator
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  linux:
+    name: Linux x86_64 MUSL
+    uses: ./.github/workflows/linux.yml
+
+  windows:
+    name: Windows x86_64 GNU
+    uses: ./.github/workflows/windows.yml
+
+  docker:
+    needs: [linux]
+    uses: ./.github/workflows/docker.yml
+    secrets: inherit
+
+  release:
+    needs: [linux, windows]
+    uses: ./.github/workflows/release.yml
+    secrets: inherit

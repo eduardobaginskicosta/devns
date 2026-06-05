@@ -1,8 +1,6 @@
 name: Release
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_call:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -13,56 +11,14 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y mingw-w64
-
-      - name: Add Targets
-        run: |
-          rustup target add x86_64-unknown-linux-musl
-          rustup target add x86_64-pc-windows-gnu
-
-      - name: Build Linux x86_64 MUSL
-        run: ./scripts/build.sh --linux --release
-
-      - name: Build Windows x86_64 GNU
-        run: ./scripts/build.sh --windows --release
-
-      - name: Create Dist Directory
-        run: mkdir -p dist
-
-      - name: Package Linux
-        run: |
-          mkdir -p dist/linux-musl
-
-          cp target/x86_64-unknown-linux-musl/release/devns dist/linux-musl/
-          cp -r config dist/linux-musl/
-
-          tar -czf dist/devns-linux-x86_64-musl.tar.gz -C dist/linux-musl .
-
-      - name: Package Windows
-        run: |
-          mkdir -p dist/windows
-
-          cp target/x86_64-pc-windows-gnu/release/devns.exe dist/windows
-          cp -r config dist/windows
-
-          tar -czf dist/devns-windows-x86_64-gnu.tar.gz -C dist/windows .
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: DevNS ${{ github.ref_name }}
           generate_release_notes: true
           body: |
+            If you find DevNS useful, consider [supporting the project on Ko-fi](https://ko-fi.com/baginskistudio).
+
             This release represents another step in the ongoing evolution of DevNS,
             focusing on improving stability, performance, and overall reliability.
 
@@ -72,26 +28,12 @@ jobs:
             or supported the project in any way — your involvement is essential to its
             progress and is greatly appreciated.
 
-            If you find DevNS useful, consider [supporting the project on Ko-fi](https://ko-fi.com/baginskistudio).
+            - - -
+
+            The Docker image for this release is available on Docker Hub:
+            [`baginskistudio/devns:${{ github.ref_name }}`](https://hub.docker.com/layers/baginskistudio/devns/${{ github.ref_name }}/).
+
+            Docker Pull command: `docker pull baginskistudio/devns:${{ github.ref_name }}`.
           files: |
             dist/devns-linux-x86_64-musl.tar.gz
             dist/devns-windows-x86_64-gnu.tar.gz
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile
-          push: true
-          tags: |
-            baginskistudio/devns:${{ github.ref_name }}
-            baginskistudio/devns:latest

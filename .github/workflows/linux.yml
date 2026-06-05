@@ -1,0 +1,20 @@
+name: Linux x86_64 MUSL Build
+on:
+  workflow_call:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: rustup target add x86_64-unknown-linux-musl
+      - run: ./scripts/build.sh --linux --release
+      - run: |
+          mkdir -p dist/linux-musl
+          cp target/x86_64-unknown-linux-musl/release/devns dist/linux-musl/
+          cp -r config dist/linux-musl/
+          tar -czf dist/devns-linux-x86_64-musl.tar.gz -C dist/linux-musl .

@@ -1,0 +1,21 @@
+name: Windows x86_64 GNU Build
+on:
+  workflow_call:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt update && sudo apt install -y mingw-w64
+      - run: rustup target add x86_64-pc-windows-gnu
+      - run: ./scripts/build.sh --windows --release
+      - run: |
+          mkdir -p dist/linux-musl
+          cp target/x86_64-unknown-linux-musl/release/devns dist/linux-musl/
+          cp -r config dist/linux-musl/
+          tar -czf dist/devns-linux-x86_64-musl.tar.gz -C dist/linux-musl .

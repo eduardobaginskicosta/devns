@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration (CI)
 on:
   push:
     branches:
@@ -27,11 +27,11 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Add MUSL target
-        run: rustup target add x86_64-unknown-linux-musl
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
 
-      - name: Format
+      - name: Format Check
         run: cargo fmt --all --check
 
-      - name: Build
-        run: ./scripts/build.sh --linux --release
+      - name: Run Tests
+        run: cargo test --all
