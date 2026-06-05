@@ -21,4 +21,6 @@ jobs:
   release:
     needs: [linux, windows]
     uses: ./.github/workflows/release.yml
+    permissions:
+      contents: write
     secrets: inherit
