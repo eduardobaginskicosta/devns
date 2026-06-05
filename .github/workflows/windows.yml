@@ -15,7 +15,7 @@ jobs:
       - run: rustup target add x86_64-pc-windows-gnu
       - run: ./scripts/build.sh --windows --release
       - run: |
-          mkdir -p dist/linux-musl
-          cp target/x86_64-unknown-linux-musl/release/devns dist/linux-musl/
-          cp -r config dist/linux-musl/
-          tar -czf dist/devns-linux-x86_64-musl.tar.gz -C dist/linux-musl .
+          mkdir -p dist/windows
+          cp target/x86_64-pc-windows-gnu/release/devns.exe dist/windows/
+          cp -r config dist/windows/
+          tar -czf dist/devns-windows-x86_64-gnu -C dist/windows .
