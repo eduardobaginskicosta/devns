@@ -10,8 +10,8 @@ set -euo pipefail
 #
 # build.sh                     : native (debug)
 # build.sh --release           : native (release)
-# build.sh --linux             : linux x86_64 gnu (debug)
-# build.sh --linyx --release   : linux x86_64 gnu (release)
+# build.sh --linux             : linux x86_64 musl (debug)
+# build.sh --linyx --release   : linux x86_64 musl (release)
 # build.sh --windows           : windows x86_64 gnu (debug)
 # build.sh --windows --release : windows x86_64 gnu (release)
 
@@ -30,7 +30,7 @@ for arg in "$@"; do
       TARGET="x86_64-pc-windows-gnu"
       ;;
     --linux)
-      TARGET="x86_64-unknown-linux-gnu"
+      TARGET="x86_64-unknown-linux-musl"
       ;;
     --any)
       TARGET=""

@@ -50,13 +50,15 @@ impl DnsZone {
   fn resolve_ipv4(value: &str) -> Ipv4Addr {
     match value.trim() {
       "$LOCALHOST" => Ipv4Addr::LOCALHOST,
+      "$BLOCK" => Ipv4Addr::UNSPECIFIED,
       other => other.parse().unwrap_or(Ipv4Addr::UNSPECIFIED),
     }
   }
 
   fn resolve_ipv6(value: &str) -> Ipv6Addr {
     match value.trim() {
-      "&LOCALHOST" => Ipv6Addr::LOCALHOST,
+      "$LOCALHOST" => Ipv6Addr::LOCALHOST,
+      "$BLOCK" => Ipv6Addr::UNSPECIFIED,
       other => other.parse().unwrap_or(Ipv6Addr::UNSPECIFIED),
     }
   }

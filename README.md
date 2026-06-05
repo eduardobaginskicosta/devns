@@ -14,132 +14,175 @@
 [social_x]: https://www.x.com/baginskistudio
 
 # DevNS (Development Name Server)
-[**Apoie o desenvolvimento deste e outros projetos no Ko-Fi**][kofi]
+[**Support the development os this and other projects on Ko-Fi**][kofi]
 
-O **DevNS** é um servidor **DNS** escrito em **Rust** com foco em ser leve, rápido
-e simples de ser utilizado. Este projeto é uma refatoração do repositório
-[**domainnamesystem**][repo], também mantido por mim, trazendo grandes melhorias de
-segurança e performance, além de corrigir erros de escrita e leitura dos pacotes
-que, por sua vez, ocasionavam a incompatibilidade com sistemas **POSIX** que
-apresnetam uma rigidez maior em relação as especificações **RFC 1034** e
-**RFC 1035**.
+**DevNS** is a DNS server written in **Rust**, designed to provide a lightweight,
+efficient, and reliable solution for development environments. It is the sucessor
+to the [**domainnamesystem**][repo] project, introducting significant improvements
+in performance, stability, protocol compliance, and overall architecture.
 
-> _Este projeto tem o foco de servir a ambientes de desenvolvimento.
-> Não utilize em servidores de produção, mesmo que este seja projetado
-> para manter grandes cargas de solicitação._
+This project was created to address limitations identified in its predecessor,
+including packet parsing inconsistencies and compatibility issues on system that
+enforce stricter adherence to **RFC 1034** and **RFC 1035*** specifications. The
+result is a cleaner, more robust implementation focused on pratical use in modern
+development workflows.
 
-**Início rápido Docker:
-` git clone https://github.com/eduardobaginskicosta/devns-docker `**
+> **Important:** DevNS is intended for development, testing, and internal
+> infrastructure environments. Although it has been designed to handle
+> substantial request volumes, it should not be considered production-ready
+> at this stage.
 
-## 📦 Execução Local e Container Docker
-
-Ao contrário do **domainnamesystem** que possui apenas cunho acadêmico, distribuído
-de maneira mais dispersa e ampla, este cumpre com o propósito de ser um servidor DNS
-robusto para ambientes de desenvolvimento em grande escala que, por comodidade ou
-necessidade, precisam de domínios internos customizados para evitar a utilização
-direta de IPs. Pensando nos desenvolvovedores, trago neste projeto dois meios de
-utilização sendo:
-
-- **Execução Local :** baixe os arquivos compactados para **linux** e **windows**
-  diretamente na página de [**releases**][releases] do GitHub, extraia os binários
-  e o execute-os. Para mais informações, avançe para a sessão de como compilar o
-  programa **localmente**.
-
-- **Container Docker :** suba um container **Docker** utilizando a imagem oficial
-  [**baginskistudio/devns**][docker]: ` docker pull baginskistudio/devns `. Para
-  mais informações, avançe para a sessão de como compilar o container **Docker**.
-
-## 🦀 Compilar Localmente
-
-Primeiramente, o `rust`, o `mingw-w64` e o `git` são dependências obrigatórias no
-desenvolvimento. Se não tiver, instalado por favor [**instale o Rust**][rust]
-através do site oficial e o `git` e `mingw-w64` através do seu gereciador
-de pacotes:
-
+**Quick Start (Docker):**
 ```bash
-# ubuntu, debian, linux mint
+git clone https://github.com/eduardobaginskicosta/devns-docker
+```
+
+- - -
+
+## 📦 Local Execution and Docker Deployment
+
+Unlike **domainnamesystem**, which was primary development as an academic and
+experimental project, **DevNS** focuses on pratical usage scenarios where
+developers an teams require custom DNS resolution for local services,
+internal domains, testing environments, and development infrastructure.
+
+The project can be used in two different ways:
+
+### Local Execution
+
+Precompiled binaries for **Linux** and **Windows** are available through the
+project's [GitHub releases][releases] page. Simply download the appropriate
+package, extract the files, and run the executable.
+
+If you prefer building from source, refer to the local compilation section below.
+
+### Docker Container
+
+DevNS is also available as an [official Docker image][docker]:
+```bash
+docker pull baginskistudio/devns
+```
+Detailed instructions for building and deploying the container can be found in the
+Docker section of this documentation.
+
+- - -
+
+## 🦀 Building from Source
+
+To build DevNS locally, the following dependencies are required:
+- [Rustup Toolchain][rust].
+- MinGW-W64 (for Windows cross-compilation).
+- GIT.
+
+If Rust is not installed on your system, download it from the official
+[Rust website][rust]. Git and MinGW-W64 can be installed using your system's
+package manager:
+```bash
+# Ubuntu, Debian, Linux Mint
 sudo apt update
 sudo apt install mingw-w64 git
 
-# fedora, red hat
+# Fedora, Red Hat
 sudo dnf install mingw64-gcc mingw64-gcc-c++ git
 
-# arch linux
+# Arch Linux
 sudo pacman -S mingw-w64-gcc git
 ```
 
-Após a instalação das dependências, clone este repositório localmente na máquina
-de desenvolvimento. Recomenda-se a utilização do sistema operacional **Linux**,
-se utilizar o **Windows**, por favor, realize a instalação do subsistema do
-Linux, o [**WSL**][wsl], e também o [**PowerShell**][pwsh].
+DevNS supports three build models:
+| **Mode**      | **Rust Target**             | **Use Case**                                       |
+|---------------|-----------------------------|----------------------------------------------------|
+| Native        | Host target                 | Local development on the current system            |
+| Linux (MUSL)  | `x86_64-unknown-linux-musl` | Docker, Alpine Linux, and portable static binaries |
+| Windows (GNU) | `x86_64-pc-windows-gnu`     | Windows deployments                                |
 
+If you plan to build the Linux MUSL or Windows versions, install the corresponding
+[Rust][rust] targets:
+```bash
+# Linux x86_64 MUSL
+rustup target add x86_64-unknown-linux-musl
+
+# Windows x86_64 GNU
+rustup target add x86_64-pc-windows-gnu
+```
+
+The native build uses the default target of the host machine. For example, on
+Ubuntu, Debian, Fedora, Arch Linux and must Linux distributions, the native
+target is typically: `x86_64-unknown-linux-gnu`.
+
+This target is recommended for local development and testing.
+
+The Linux MUSL target is intended primarily for containerized deployments. It
+produces a portable binary compatible with minimal container images such as
+**Alpine Linux** and **Scratch**, making it the recommended choice for
+Docker images.
+
+Once the dependencies are available, clone the repository:
 ```bash
 git clone https://github.com/eduardobaginskicosta/devns.git
 cd devns
 ```
 
-Para realizar a build e executar o projeto, execute os seguintes comandos dentro
-da pasta (normalmente, utilizam o `bash` como shell padrão):
+Development is primarily targeted at **Linux** systems. Windows users are
+strongly encouraged to use the [Windows Subsystem for Linux (WSL)][wsl]
+alongside [PowerShell][pwsh] for a more consistent development experience.
+
+To build the project:
 
 ```bash
-# linux / windows native (release)
+# Native build (release)
 ./scripts/build.sh --release
 
-# linux x86_64 gnu (release)
+# Linux x86_64 MUSL target (release)
 ./scripts/build.sh --linux --release
 
-# windows x86_64 gnu (release)
+# Windows x86_64 GNU target (release)
 ./scripts/build.sh --windows --release
 ```
-
-Se a build for bem sucedida, basta executar o binário como **administrador** no
-Windows e como **sudo** no Linux, através do `run.sh`, como indicado a seguir:
-
+After a successful build, run the server with administrative privileges:
 ```bash
-# linux native (release)
+# Native Linux build
 sudo ./scripts/run.sh --release
 
-# linux x86_64 gnu (release)
+# Linux x86_64 MUSL build
 sudo ./scripts/run.sh --linux --release
 
-# windows x86_64 gnu (release)
+# Windows x86_64 GNU build
 sudo ./scripts/run.sh --windows --relase
 ```
 
-> OBS : o binário tentará carregar os arquivos de **Zona DNS** a partir da pasta de
-> execução, ou seja, se invocar o processo dentro da pasta raiz do sistema (`/`),
-> ele tentará lêr os arquivos do caminho `/config`; se você mudar as configurações
-> de diretório se atente a histo, caso contrário, basta executar estando dentro da
-> pasta `docker` do repositório clonado, onde a pasta `config` está localizada ou,
-> mova a mesma para a raiz do projeto.
+### Configuration Directory
 
-Se executar corretamente, o **devns** irá escutar as requisições DNS na porta `53`
-encima do seu IP atual, ou seja, o bind ocorrerá algo como `192.168.0.10:53`; para
-saber qual IP o servidor está ouvindo a porta, basta verificar as configurações da
-sua distribuição através do `ip addr` ou, se preferir, através dos logs iniciais
-nas linhas `dns.bind` e `dns.port`.
+During startup, DevNS loads DNS zone files from a `config` directory located
+relative to the current working directory (CWD). Because of this, the server
+must be executed from a location where the configuration directory remains
+accessible.
 
-Por padrão, o **devns** vem com zonas de demonstração pré-configuradas, sendo uma
-destas as zonas `host`, `server`, `server.host` que apontam para o **localhost**
-(ipv4: `127.0.0.1`, ipv6: `::1`); para testar se o servidor está funcionando
-corretamente podemos utilizar os seguintes comandos para consultar a zona
-(substitua o `DNS_IP` pelo IP que o servidor está sendo executado. Se estiver na
-porta `53`, basta somente o IP, caso contrário, especifique a porta):
+If zone files cannot be found, DevNS will continue operating as a forwarding
+resolver, but locally defined zones will not be available.
+
+### Verifying the Installation
+
+By default, DevNS listens for DNS request on port `53` of the configured network
+interface. The repository includes demonstration zones out of the box, including:
+- `host`
+- `server`
+- `server.local`
+
+These domains resolve to the local loopback address (`127.0.0.1` and `::1`).
+You can verify the installation using:
 
 ```bash
-# linux & windows
+# Linux & Windows
 nslookup host DNS_IP
 nslookup host 192.168.0.10 # example
 
-# linux
+# Linux
 dig @DNS_IP host
 dig @192.168.0.10 host # example
 ```
-
-O resultado desssa requisição, no **Linux (Ubuntu)**, se estiver funcionando
-corretamente o resultado deve ser algo semelhante a isto (pode alterar de acordo
-com cada distribuição):
-
+A successful response indicates that the DNS server is running correctly and
+serving the configurated zone data.
 ```txt
 ; <<>> DiG 9.20.18-1ubuntu2.1-Ubuntu <<>> @192.168.0.10 host
 ; (1 server found)
@@ -167,104 +210,102 @@ host.			3600	IN	MX	10 mail.host.
 ;; MSG SIZE  rcvd: 129
 ```
 
-Como esperado, o **devns** retornou os IPs de **localhost**, assim como previamente
-declarado no arquivo de zona [`zone.dev`](./config/zone.dev). Os aquivos de
-**Zona DNS** são simples e intuitivos de utilizar, para saber mais a respeito,
-avançe para a seção das **Zonas DNS**.
+### Environment Variables
 
-> Para mais informações de como utilizar os scripts [`build.sh`](./scripts/build.sh)
-> e [`run.sh`](./scripts/run.sh), por favor, leia os comentários incluídos nos
-> cabeçalhos dos arquivos para uma lista completa de comandos ou, se preferir,
-> avançe para a seção de comandos.
+Several aspects of DevNS can be customized through environment variables. These
+settings are supported by both local executions and Docker deployments.
 
-Algums comportamentos do `devns` podem ser modificados através das variáveis de
-ambiantes passadas diretamente na linha de comando ou arquivos de script através
-da exportação. Acompnahe a seguir a lista das variáveis disponíveis (compatíveis
-com o container **Docker**):
+> ` DEBUG_MODE `
 
-- ` DEBUG_MODE ` : é uma variável **booleana** que define se o **devns** deve
-  exibir as mensagens de depuração opcionais no terminal. Os valores aceitos são:
-  - `1`, `TRUE`, `True`, `true` -- habilitar a depuração.
-  - `0`, `FALSE`, `False`, `false` -- desabilitar a depuração.
-  - Em caso de valor inválido -- habilita a depuração (comportamento padrão).
+Enables or disables debug logging output. Accept values:
+- `0`, `FALSE`, `False`, `false` -- Disable debug mode.
+- `1`, `TRUE`, `True`, `true` -- Enable debug mode.
 
-- ` MAX_MESSAGES ` : é uma variável **usize** que define a quantidade máxima de
-  mensagens em fila que cada **Worker** do **devns** pode gerenciar ao mesmo tempo,
-  sem que este entre na fila de espera. Somente aceita valores numéricos de `1`
-  até `10000`, sendo o padrão `20`.
+If an invalid value is provided, debug mode remains enabled by default.
 
-- ` MAX_WORKERS ` : é uma variável **usize** que define a quantidade máxima de
-  **Workers** que rodam juntos. Somente aceita valores numéricos de `1` até `256`,
-  sendo o padrão `10`.
+> ` MAX_MESSAGES `
 
-- ` PORT ` : é uma variável **u16** que define a porta que o servidor DNS deve
-  ouvir as requisições. Somente aceita valores numéricos de `53` até `9000`,
-  sendo o padrão `53`.
+Defines the maximum number of queued messages that each worker can process before
+requests begin waiting for available capacity.
+- Minimum: `1`
+- Maximum: `10000`
+- Default: `20`
 
-- ` DNS_SERVERS ` : é uma variável **Vec\<Ipv4Addr\>** que define os servidores
-  DNS de lookup ao qual as requisições são repassadas caso o **devns** não esteja
-  configurado para responder. Aceita uma **String** que pode conter um ou mais
-  endereços IPV4, separados por ponto e vírgula, tal como `1.1.1.1`,
-  `1.1.1.1;1.0.0.1` e assim por diante. O valor padrão é `1.1.1.1;1.0.0.1;8.8.8.8`,
-  mas se não especificado assume os lookups padrões (`ROOT_SERVERS`):
-  `198.41.0.4;1.1.1.1;1.0.0.1`.
+> ` MAX_WORKERS `
 
-Todas as variáveis de ambiente possuem valores padrão, definido por código, em caso
-de erro de interpretação ou definição de valores errados. Nenhum alerta é desparado
-no terminal, deve-se atentar se as configurações foram corretamente aplicadas na
-mensagem de log inicial do **devns** com as configurações do servidor.
+Defines the maximum number of workers threads available to process requestes
+concurrently.
+- Minimum: `1`
+- Maximum: `256`
+- Default: `10`
 
-_**OBS :** este projeto possui **Zonas DNS** previamente configuradas na pasta
-[`config`](./config) que, por padrão, são utilizados na construção do conatiner
-**Docker**. Estão contidos exemplos básicos como **domínios** para desenvolvimento
-local como o `host` e `server`, bem como exemplos de **sobreescrita de domínios**
-demonstrado com os serviços de **Proteção Parental** através do DNS, dispoibilizado
-pelo **Google**, **YouTube**, **Bing** e **DuckDuckGo**._
+> ` PORT `
 
-## 🐋 Compilar Container Docker
+Specifies the network port used by the DNS server.
+- Minimum: `53`
+- Maximum: `9000`
+- Default: `53`
 
-Para compilar para uma imagem do **Docker**, você deve ter as mesmas dependências
-exigidas na compilação local, ou seja, os pacotes `rust`, `mingw-w64` e `git`,
-instalados. Como anteriormente, recomendamos a utilização do sistema operacional
-**Linux** ou, se for utilizar o **Windows**, realize a instalação do [**WSL**][wsl].
+> ` DNS_SERVERS `
 
-A compilação foi simplificada através do script `docker.sh` que, assim como os
-demais, deve ser executado na pasta raiz do projeto. Os principais comandos
-disponíveis são:
+Define the upstream DNS servers used when DevNS is unable to answer a query from
+its local zones. Multiple IPv4 address can be provided using semicolon-separated
+values:
+```txt
+1.1.1.1
+1.1.1.1;1.0.0.1
+1.1.1.1;1.0.0.1;8.8.8.8
+```
 
+If no value is supplied, DevNS falls back to its built-in default resolver
+configuration.
+
+> All environment variables have safe defaults defined internally. Invalid
+> values are ignored and replaced automatically. The active configuration can
+> always be verified through the startup logs.
+
+The repository also includes a collection of example DNS zones inside the
+[`config`](./config) directory. These examples demonstrate common development
+scenarios, local domains, and DNS overrides for selected public services.
+
+- - -
+
+## 🐋 Building and Running with Docker
+
+DevNS can be deployed using Docker for a simplified installation an management
+experience. The repository includes a helper script named
+[`docker.sh`](./scripts/docker.sh), which automates the complete build and
+deployment workflow.
+
+Available commands:
 ```bash
-# rust build linux (release) + docker build + docker compose up
+# Build Rust binaries, create the Docker image and start the container
 ./scripts/docker.sh
 
-# rust build linux (release) + docker build
+# Build Rust binaries and create the Docker image only
 ./scripts/docker.sh --build-only
 
-# docker compose down
+# Stop and remove the running container
 ./scripts/docker.sh --down
 ```
 
-Para testar a container pré-configurado neste projeto, execute o `docker.sh`
-diretamente, sem nenhum argumento adicional. Todo o código **rust** será compilado
-em **release** para o **Linux x86_64 (GNU)**, a imagem será compilada localmente e
-o container será subido automaticamente com o nome de `devns`. Ao subir, o servidor
-DNS fará bind automático na porta `53` (se nada for alterado) no **host**, bastando
-apenas referenciar o IP local, como no exemplo abaixo (considerando que o seu IP
-seja `192.168.0.10`; verifique o seu IP através das configurações do sistema ou
-do comando `ip addr` no **Linux**):
+Running the script without additional parameters performs a complete release build,
+creates the Docker image locally, and launches the container automatically.
+By default, the DNS service is exposed through port `53` on the host machine.
+
+Once the container is running, you can verify the installation using the same
+commands shown in the local execution section:
 
 ```bash
-# linux & windows
+# Linux and Windows
 nslookup host DNS_IP
 nslookup host 192.168.0.10 # example
 
-# linux
+# Linux
 dig @DNS_IP host
 dig @192.168.0.10 host # example
 ```
-
-Se tudo funcionou corretamente, o resultado deve ser algo parecido com isso, no
-**Linux (Ubuntu)**, considerando as configurações padrão:
-
+If the configuration remains unchanged, the included demonstration zones should return loopback addresses as expected.
 ```txt
 ; <<>> DiG 9.20.18-1ubuntu2.1-Ubuntu <<>> @192.168.0.10 host
 ; (1 server found)
@@ -292,85 +333,26 @@ host.			3600	IN	MX	10 mail.host.
 ;; MSG SIZE  rcvd: 129
 ```
 
-Como o esperado, o **devns** retornou os IPs do **localhost**, assim como
-previamente configurado no arquivo de zona [`zone.dev`](./config/zone.dev). Os
-aquivos de **Zona DNS** são simples e intuitivos de utilizar, para saber mais a
-respeito, avançe para a seção das **Zonas DNS**.
+All environment variables documented in the previous section are fully supported
+when running DevNS inside a Docker container.
 
-Algums comportamentos do `devns` podem ser modificados através das variáveis de
-ambiantes passadas diretamente na linha de comando ou arquivos de script através
-da exportação. Acompnahe a seguir a lista das variáveis disponíveis (compatíveis
-com a **execução local**):
+> The provided [`docker-compose.yaml`](./docker/docker-compose.yaml) already
+> includes sensible defaults for most development scenarios. When customizing
+> values, pay close attention to spelling and formatting, as invalid entries
+> automatically fall back to the built-in defaults.
 
-- ` DEBUG_MODE ` : é uma variável **booleana** que define se o **devns** deve
-  exibir as mensagens de depuração opcionais no terminal. Os valores aceitos são:
-  - `1`, `TRUE`, `True`, `true` -- habilitar a depuração.
-  - `0`, `FALSE`, `False`, `false` -- desabilitar a depuração.
-  - Em caso de valor inválido -- habilita a depuração (comportamento padrão).
+- - -
 
-- ` MAX_MESSAGES ` : é uma variável **usize** que define a quantidade máxima de
-  mensagens em fila que cada **Worker** do **devns** pode gerenciar ao mesmo tempo,
-  sem que este entre na fila de espera. Somente aceita valores numéricos de `1`
-  até `10000`, sendo o padrão `20`.
+## ⚙️ DNS Zone Configuration
 
-- ` MAX_WORKERS ` : é uma variável **usize** que define a quantidade máxima de
-  **Workers** que rodam juntos. Somente aceita valores numéricos de `1` até `256`,
-  sendo o padrão `10`.
+DevNS uses a straightforward zone-file format designed to be easy to read,
+maintain, and extend.
 
-- ` PORT ` : é uma variável **u16** que define a porta que o servidor DNS deve
-  ouvir as requisições. Somente aceita valores numéricos de `53` até `9000`,
-  sendo o padrão `53`.
+All DNS zones are loaded from files whose names begin with `zone.` inside the
+config directory. Each zone file can define one or more domains, including their
+associated records and metadata.
 
-- ` DNS_SERVERS ` : é uma variável **Vec\<Ipv4Addr\>** que define os servidores
-  DNS de lookup ao qual as requisições são repassadas caso o **devns** não esteja
-  configurado para responder. Aceita uma **String** que pode conter um ou mais
-  endereços IPV4, separados por ponto e vírgula, tal como `1.1.1.1`,
-  `1.1.1.1;1.0.0.1` e assim por diante. O valor padrão é `1.1.1.1;1.0.0.1;8.8.8.8`,
-  mas se não especificado assume os lookups padrões (`ROOT_SERVERS`):
-  `198.41.0.4;1.1.1.1;1.0.0.1`.
-
-Todas as variáveis de ambiente possuem valores padrão, definido por código, em caso
-de erro de interpretação ou definição de valores errados. Nenhum alerta é desparado
-no terminal, deve-se atentar se as configurações foram corretamente aplicadas na
-mensagem de log inicial do **devns** com as configurações do servidor.
-
-> **Se utilizar o `docker-compose.yaml` deste projeto, todos os valores padrão estão
-> previamente definidos. Fique atento a erros de digitação pois, nenhum alerta é
-> emitido, sendo assumido os valores definidos em código.**
-
-_**OBS :** este projeto possui **Zonas DNS** previamente configuradas na pasta
-[`config`](./config) que, por padrão, são utilizados na construção do conatiner
-**Docker**. Estão contidos exemplos básicos como **domínios** para desenvolvimento
-local como o `host` e `server`, bem como exemplos de **sobreescrita de domínios**
-demonstrado com os serviços de **Proteção Parental** através do DNS, dispoibilizado
-pelo **Google**, **YouTube**, **Bing** e **DuckDuckGo**._
-
-## ⚙️ Definição das Zonas DNS
-
-Todas as **Zonas DNS** do servidor **devns** são declaradas através de arquivos
-`zone.` dentro da pasta [`config`](./config), onde seguem uma estruturação simples
-e rápida. Cada arquivo de zona pode conter **múltiplos domínios (`ZONE`)**
-apontando para endereços **IPV4 (`A`)** e **IPV6 (`AAAA`)**, possuindo
-**Servidores de Nome (`NS`)**, **Autoridade (`MX`)** e
-**Tempo de Vida (`TTL`)** próprios.
-
-Os arquivos são lidos de forma recursiva dentro da pasta [`config`](./config)
-desde que atendam ao requisito de iniciarem com `zone.` e sigam a estruturação
-correta. Uma obervação importante é que o **devns** sempre irá ler a pasta
-`config` relativo ao caminho do processo que o invoca, ou seja, se estiver na
-**pasta raíz (`/`)** do sistema, o **devns** tentará ler os arquivos do caminho
-relativo `/config`. Se a pasta das zonas etiverem em um caminho específico como
-`/app/config`, acesse a pasta e, após, execute o binário; caso contrário, o
-**devns** somente servirá de **lookup** de repasse. Para os passos seguintes,
-será considerado a utilização do projeto atual.
-
-Para declarar uma nova **Zona DNS** acesse a pasta [`config`](./config) e
-crie um arquivo com `zone.` no início, ou seja, se irá criar uma zona para o
-domínio `example.dev` crie o arquivo `zone.example.dev` (boas práticas) ou
-`zone.example`. O arquivo pode estar contido na raiz da pasta ou dentro de
-subpastas, se necessário, para uma melhor organização. O arquivo deve conter
-a seguinte estruturação (o exemplo será com o `example.dev`):
-
+Example:
 ```zone
 @ ZONE: example.dev, example.local
 @ TTL: 3600
@@ -380,22 +362,22 @@ a seguinte estruturação (o exemplo será com o `example.dev`):
 @ AAAA: $LOCALHOST
 ```
 
-No exemplo demonstrado acima, declaramos que os **domínios/zonas** `example.dev`
-e `example.local` devem apontar para os endereços IPV4 e IPV6 do **localhost**.
-As palavras-chave `$LOCALHOST` são substituídas automaticamente, sendo um atalho
-mais seguro e confiável para apontamento local, sendo o recomendado. Por padrão,
-devido ao objetivo de ser utilizado em ambientes de desenvolvimento, o cacheamento
-é declaro para não mais de `3600`, o equivalente a **1 Hora**.
+The example above creates the domains `example.dev` and `example.local`, both
+resolving to the IPv4 and IPv6 loopback addresses.
 
-Este exemplo demonstra a declaração simples de uma **Zona DNS** mas podemos declarar
-vários endereços IPV4 (`A`) e IPV6 (`AAAA`) através da declaração separada por
-**vírgula (`,`)**, tal como feito no linha `ZONE`:
+The special keyword `$LOCALHOST` is automatically expanded to the appropriate
+loopback values and is recommended whenever local development targets are required.
+By default, development-oriented zones use relatively short cache lifetimes to
+reduce propagation delays during testing.
 
+Multiple IPv4 and IPv6 addresses can also be declared:
 ```zone
-; ...
 @ A: 172.66.147.243, 104.20.23.154
-; ...
 ```
+
+Zone files are discovered recursively throughout the configuration directory
+structure, allowing larger deployments to organize configurations across multiple
+folders without affecting functionality.
 
 Bem como, pode-se declarar que a **zona** não possua endereços IPV4 ou IPV6
 deixando os campos em branco. Importante: ao menos um dos campos deve ser declarado,
@@ -403,57 +385,94 @@ caso contrário, será retornado um erro pois o **devns** responderá com dados 
 algo que os resolvedores como `dig` e `nslookup` não aceitam, pois ele não repassará
 para os **lookups** responderem.
 
-### Sistema de Bloqueio Nativo
+### Zone Discovery Behavior
 
-As **Zonas DNS** trazem um recurso nativo de bloqueio de domínios, desde que estes
-não ocorram através do **DoH (DNS Over Https)**, onde todas as zonas que declaram
-em algum lugar o IPV4 (`A`) ou o IPV6 (`AAAA`) como endereços vazios são
-automaticamente **Recusados (`Refused`)**, o que acabada realizando o impedimento
-de acesso.
+When DevNS starts, it searches for zone files relative to the process working
+directory. For example, if the server is started from `/`, DevNS will attempt to
+load configuration files from `/config`.
+
+If no valid zones are found, the server continues operating as a forwarding
+resolver, delegating requests to upstream DNS providers whenever necessary.
+
+### Native Domain Blocking
+
+DevNS includes a built-in mechanism for blocking domains directly through zone
+definitions. A zone can be configured to return invalid or null addresses,
+effectively preventing successful resolution:
 
 ```zone
-; ...
 @ A: 0.0.0.0
-; or/and
 @ AAAA: 0:0:0:0:0:0:0:0
-; ...
+```
+Or with the special keyword `$BLOCK`:
+```zone
+@ A: $BLOCK
+@ AAAA: $BLOCK
 ```
 
-## 📃 Licenciamento e Contribuição
+This feature can be used for local content filtering, development testing, parental
+control scenarios, or custom DNS-based restrictions. Keep in mind that
+**DNS-over-HTTPS (DoH)** traffic bypasses traditional DNS resolution paths and
+therefore cannot be controlled through standard DNS zone overrides alone.
 
-Este projeto é licenciado através do BSD-3-Clause - leia o [**LICENSE**](./LICENSE)
-para mais informações.
+- - -
 
-Sinta-se livre para contribuir com este projeto fazendo _fork_ do repositório,
-deixando sua estrela, enviando _pull requests_, ou reportando uma _issue_. Se
-você quiser adicionar recursos novo ou melhorar o código atual, abra uma
-_issue_ ou faça um _pull request_, e ficarei feliz em revisar.
+## 📃 License and Contributions
 
-## ❤️ Apoiar o Desenvolvimento e Redes Sociais
+DevNS is distributed under the terms os the **BSD-3-Clause License**.
 
-Por favor, considere em [**me apoiar no Ko-Fi**][kofi] através de uma doação
-única ou mensal e tenha acesso ao servidor do **Discord**, onde publico o
-progresso de projetos em andamento, projetos futuros e muito mais.
+For a complete licensing information, please refer to the [**LICENSE**](./LICENSE)
+file included in the repository.
 
-Ou, se preferir, me siga nas redes sociais:
-- [**Seguir no Instagram**][social_insta] -- publico fotos e momentos do meu dia a dia.
-- [**Seguir no YouTube**][social_yt] -- publico vídeos a respeito de projetos no geral.
-- [**Seguir no Twitter (X)**][social_x] -- publico pronunciamentos curtos e rápidos.
-- [**Seguir no LinkedIn**][social_in] -- contexto mais profissional, porém com
-  conteúdo de qualidade.
+Contributions of all sizes are welcome. If you would like to participate in the
+development of the project, consider:
+- Reporting bugs or unexpected behavior through GitHub Issues.
+- Suggesting improvements or new features.
+- Submitting feedback from real-world usage.
+- Supporting the project by **starring** the repository.
 
-## 👨‍🏫 Citar o Repositório
+Every contribution helps improve the project and is greatly appreciated.
 
-Se você utiliza este _software_ no seu trabalho, por favor cite-o utilizando as
-seguintes informações de metadados.
-[Saiba mais a respeito dos arquivos de citação][citation].
+- - -
 
-Citação no modelo **APA**:
+## 🤝 Support the Project and Follow My Work
+
+If DevNS has ben usedul to you, your team, or your organization, please consider
+supporting its continued development.
+
+[**👉 Support on Ko-Fi**][kofi]
+
+Supporters also again access to the project's Discord community, where development
+progress, upcoming projects, experiments, and technical discussions are shared
+regulary.
+
+You can also follow my work through the following platforms:
+- [**Instagram**][social_insta] -- Personal updates, behind-the-scenes content, and
+  ongoing projects.
+- [**YouTube**][social_yt] -- Development-related content, technical projects, and
+  demonstrations.
+- [**X (Twitter)**][social_x] -- Quick updates, announcements, and short-form
+  content.
+- [**LinkedIn**][social_in] -- Professional updates, technical articles, and
+  industry-related discussions.
+
+Your support, feedback, and engagement help keep projeccts like DevNS actively
+maintained and continuously envolving.
+
+## 👨‍🏫 Citation
+
+If you use DevNS in academic work, research projects, technical reports, or
+publications, please consider citing the project appropriately.
+
+For additional information regarding citation files on GitHub, see:
+[About CITATION Files][citation].
+
+### APA Format
 ```APA
 Baginski Costa, E. (2026). DevNS (Development Name System) (Version 0.1.0) [Computer software]. https://github.com/eduardobaginskicosta/devns
 ```
 
-Citação no modelo **BibTeX**:
+### BibTeX Format
 ```BibTeX
 @software{Baginski_Costa_DevNS_Development_Name_2026,
 author = {Baginski Costa, Eduardo},
