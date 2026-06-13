@@ -442,8 +442,6 @@ You can also follow my work through the following platforms:
   ongoing projects.
 - [**YouTube**][social_yt] -- Development-related content, technical projects, and
   demonstrations.
-- [**X (Twitter)**][social_x] -- Quick updates, announcements, and short-form
-  content.
 - [**LinkedIn**][social_in] -- Professional updates, technical articles, and
   industry-related discussions.
 
