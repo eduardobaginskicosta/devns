@@ -91,13 +91,11 @@ pub fn startup_banner(ip: IpAddr, config: ServerConfig) {
   const TITLE: &str = "DevNS (Development Name Server)";
   const AUTHOR: &str = "Eduardo Baginski Costa <eduardobcosta1234@gmail.com>";
   const LICENSE: &str = "BSD-3-Clause";
-  const DONATE: &str = "https://ko-fi.com/baginskistudio";
   const REPO: &str = "https://github.com/eduardobaginskicosta/devns";
 
   line("dns.title", &TITLE);
   line("dns.author", &AUTHOR);
   line("dns.license", &LICENSE);
-  line("dns.donate", &DONATE);
   line("dns.repo", &REPO);
   line("dns.max.messages", &config.max_messages);
   line("dns.max.workers", &config.max_workers);
