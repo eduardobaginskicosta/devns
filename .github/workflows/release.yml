@@ -26,8 +26,6 @@ jobs:
           name: DevNS ${{ github.ref_name }}
           generate_release_notes: true
           body: |
-            If you find DevNS useful, consider [supporting the project on Ko-fi](https://ko-fi.com/baginskistudio).
-
             This release represents another step in the ongoing evolution of DevNS,
             focusing on improving stability, performance, and overall reliability.
 
