@@ -1,7 +1,6 @@
 [releases]: https://github.com/eduardobaginskicosta/devns/releases
 [docker]: https://hub.docker.com/r/baginskistudio/devns
 [repo]: https://github.com/eduardobaginskicosta/domainnamesystem
-[kofi]: https://ko-fi.com/baginskistudio
 
 [citation]: https://docs.github.com/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-citation-files
 [rust]: https://rust-lang.org/tools/install/
@@ -11,10 +10,8 @@
 [social_insta]: https://www.instagram.com/eduardobaginskicosta/
 [social_yt]: https://www.youtube.com/@baginskistudio
 [social_in]: https://www.linkedin.com/in/eduardobaginskicosta/
-[social_x]: https://www.x.com/baginskistudio
 
 # DevNS (Development Name Server)
-[**Support the development os this and other projects on Ko-Fi**][kofi]
 
 **DevNS** is a DNS server written in **Rust**, designed to provide a lightweight,
 efficient, and reliable solution for development environments. It is the sucessor
@@ -37,7 +34,7 @@ development workflows.
 git clone https://github.com/eduardobaginskicosta/devns-docker
 ```
 
-- - -
+<!-- = = = -->
 
 ## 📦 Local Execution and Docker Deployment
 
@@ -65,7 +62,7 @@ docker pull baginskistudio/devns
 Detailed instructions for building and deploying the container can be found in the
 Docker section of this documentation.
 
-- - -
+<!-- = = = -->
 
 ## 🦀 Building from Source
 
@@ -268,7 +265,7 @@ The repository also includes a collection of example DNS zones inside the
 [`config`](./config) directory. These examples demonstrate common development
 scenarios, local domains, and DNS overrides for selected public services.
 
-- - -
+<!-- = = = -->
 
 ## 🐋 Building and Running with Docker
 
@@ -415,7 +412,7 @@ control scenarios, or custom DNS-based restrictions. Keep in mind that
 **DNS-over-HTTPS (DoH)** traffic bypasses traditional DNS resolution paths and
 therefore cannot be controlled through standard DNS zone overrides alone.
 
-- - -
+<!-- = = = -->
 
 ## 📃 License and Contributions
 
@@ -440,12 +437,6 @@ Every contribution helps improve the project and is greatly appreciated.
 If DevNS has ben usedul to you, your team, or your organization, please consider
 supporting its continued development.
 
-[**👉 Support on Ko-Fi**][kofi]
-
-Supporters also again access to the project's Discord community, where development
-progress, upcoming projects, experiments, and technical discussions are shared
-regulary.
-
 You can also follow my work through the following platforms:
 - [**Instagram**][social_insta] -- Personal updates, behind-the-scenes content, and
   ongoing projects.
@@ -458,6 +449,8 @@ You can also follow my work through the following platforms:
 
 Your support, feedback, and engagement help keep projeccts like DevNS actively
 maintained and continuously envolving.
+
+<!-- = = = -->
 
 ## 👨‍🏫 Citation
 
