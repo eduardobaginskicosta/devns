@@ -8,7 +8,7 @@
 [wsl]: https://learn.microsoft.com/en-us/windows/wsl/install
 
 [social_insta]: https://www.instagram.com/eduardobaginskicosta/
-[social_yt]: https://www.youtube.com/@baginskistudio
+[social_yt]: https://www.youtube.com/@eduardobaginskicosta
 [social_in]: https://www.linkedin.com/in/eduardobaginskicosta/
 
 # DevNS (Development Name Server)
