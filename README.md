@@ -338,7 +338,7 @@ when running DevNS inside a Docker container.
 > values, pay close attention to spelling and formatting, as invalid entries
 > automatically fall back to the built-in defaults.
 
-- - -
+<!-- = = = -->
 
 ## ⚙️ DNS Zone Configuration
 
@@ -430,7 +430,7 @@ development of the project, consider:
 
 Every contribution helps improve the project and is greatly appreciated.
 
-- - -
+<!-- = = = -->
 
 ## 🤝 Support the Project and Follow My Work
 
